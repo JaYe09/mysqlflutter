@@ -1,0 +1,93 @@
+Voici un exemple d'extraction d'informations à partir d'une base de données MySQL avec Flutter :
+
+Tout d'abord, vous devez ajouter le package mysql à votre projet Flutter. Vous pouvez le faire en ajoutant la ligne suivante dans votre fichier pubspec.yaml :
+yaml
+
+Copy code
+dependencies:
+  mysql: ^0.13.0
+Ensuite, vous devez établir une connexion avec votre base de données MySQL en utilisant le package mysql. Voici un exemple de code pour cela :
+dart
+
+Copy code
+import 'package:mysql1/mysql1.dart';
+
+Future<MySqlConnection> getConnection() async {
+  final conn = await MySqlConnection.connect(ConnectionSettings(
+    host: 'localhost', // Remplacez localhost par l'adresse de votre serveur MySQL
+    port: 3306, // Le port par défaut pour MySQL est 3306
+    user: 'votre_nom_d_utilisateur_mysql',
+    password: 'votre_mot_de_passe_mysql',
+    db: 'votre_base_de_données_mysql',
+  ));
+
+  return conn;
+}
+Maintenant que vous avez établi une connexion avec votre base de données MySQL, vous pouvez extraire des données de votre base de données en exécutant des requêtes SQL. Voici un exemple de code pour extraire des données d'une table dans votre base de données MySQL :
+dart
+
+Copy code
+import 'package:mysql1/mysql1.dart';
+
+Future<List<Map<String, dynamic>>> getUsers() async {
+  final conn = await getConnection();
+  final results = await conn.query('SELECT * FROM users');
+  await conn.close();
+
+  return results.toList();
+}
+Dans cet exemple, nous avons utilisé la fonction query pour exécuter une requête SQL pour extraire tous les enregistrements de la table users. La fonction toList est utilisée pour convertir les résultats en une liste de cartes de données.
+
+Vous pouvez maintenant utiliser les données extraites pour les afficher dans votre application Flutter. Voici un exemple de code pour afficher les données extraites dans un widget ListView :
+dart
+
+
+Copy code
+import 'package:flutter/material.dart';
+
+class UsersPage extends StatefulWidget {
+  @override
+  _UsersPageState createState() => _UsersPageState();
+}
+
+class _UsersPageState extends State<UsersPage> {
+  Future<List<Map<String, dynamic>>> _users;
+
+  @override
+  void initState() {
+    super.initState();
+    _users = getUsers();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Users'),
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _users,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (context, index) {
+                final user = snapshot.data[index];
+                return ListTile(
+                  title: Text(user['name']),
+                  subtitle: Text(user['email']),
+                );
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Une erreur s\'est produite'));
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+    );
+  }
+}
+Dans cet exemple, nous avons utilisé un widget FutureBuilder pour afficher les données extraites une fois qu'elles sont disponibles. Le widget ListView.builder est utilisé pour afficher les données extraites sous forme de liste d'éléments ListTile.
+
