@@ -1,0 +1,90 @@
+Pour afficher des données depuis une base de données MySQL en utilisant PHP et Flutter, vous pouvez suivre les étapes suivantes :
+
+Tout d'abord, vous devez vous connecter à votre base de données MySQL à l'aide de PHP et exécuter une requête pour récupérer les données que vous souhaitez afficher. Voici un exemple de code PHP pour se connecter à la base de données et exécuter une requête SELECT :
+
+<?php
+$servername = "localhost";
+$username = "username";
+$password = "password";
+$dbname = "myDB";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+// Execute query to get data
+$sql = "SELECT * FROM myTable";
+$result = $conn->query($sql);
+
+// Close connection
+$conn->close();
+?>
+
+
+2- Ensuite, vous pouvez traiter les données récupérées à l'aide de PHP et les renvoyer sous forme de JSON à Flutter. Voici un exemple de code PHP pour récupérer les données sous forme de tableau associatif et les encoder en JSON :
+<?php
+// Fetch data as associative array
+$data = array();
+while ($row = $result->fetch_assoc()) {
+  $data[] = $row;
+}
+
+// Return data as JSON
+header('Content-Type: application/json');
+echo json_encode($data);
+?>
+
+3- Dans Flutter, vous pouvez utiliser le package http pour envoyer une requête GET à votre script PHP et récupérer les données JSON renvoyées. Voici un exemple de code Flutter pour récupérer les données et les afficher dans une ListView :
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  List data = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  void fetchData() async {
+    final response = await http.get(Uri.parse('http://localhost/get_data.php'));
+    if (response.statusCode == 200) {
+      setState(() {
+        data = json.decode(response.body);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('My App'),
+      ),
+      body: ListView.builder(
+        itemCount: data.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(data[index]['title']),
+            subtitle: Text(data[index]['description']),
+          );
+        },
+      ),
+    );
+  }
+}
+
+Notez que vous devez remplacer l'URL http://localhost/get_data.php par l'URL de votre script PHP qui récupère les données depuis MySQL et les renvoie sous forme de JSON.
+
+J'espère que cela vous aidera à afficher des données depuis une base de données MySQL en utilisant PHP et Flutter !
