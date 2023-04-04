@@ -1,0 +1,23 @@
+// Ouvrir une connexion à la base de données
+$conn = mysqli_connect('localhost', 'username', 'password', 'nom_de_la_base_de_données');
+
+// Parcourir le répertoire contenant les fichiers JSON
+foreach (scandir('/chemin/vers/votre/répertoire') as $filename) {
+  // Vérifier si le fichier est un fichier JSON
+  if (pathinfo($filename, PATHINFO_EXTENSION) === 'json') {
+    // Lire le contenu du fichier
+    $json_content = file_get_contents('/chemin/vers/votre/répertoire/' . $filename);
+
+    // Décoder le contenu JSON en un tableau PHP
+    $data = json_decode($json_content, true);
+
+    // Construire la requête SQL pour insérer les données dans la base de données
+    $sql = "INSERT INTO table_nom (champ_1, champ_2, champ_3) VALUES ('" . $data['valeur_champ_1'] . "', '" . $data['valeur_champ_2'] . "', '" . $data['valeur_champ_3'] . "')";
+
+    // Exécuter la requête SQL
+    mysqli_query($conn, $sql);
+  }
+}
+
+// Fermer la connexion à la base de données
+mysqli_close($conn);
