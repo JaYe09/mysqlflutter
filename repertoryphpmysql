@@ -6,7 +6,7 @@ foreach (scandir('/chemin/vers/votre/répertoire') as $filename) {
   // Vérifier si le fichier est un fichier JSON
   if (pathinfo($filename, PATHINFO_EXTENSION) === 'json') {
     // Lire le contenu du fichier
-    $json_content = file_get_contents('/chemin/vers/votre/répertoire/' . $filename);
+   $json = file_get_contents('/chemin/vers/votre/répertoire' . "/" . $file);
 
     // Décoder le contenu JSON en un tableau PHP
     $data = json_decode($json_content, true);
