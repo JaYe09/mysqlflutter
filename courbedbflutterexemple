@@ -1,0 +1,70 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:charts_flutter/flutter.dart' as charts;
+
+class MonEcran extends StatefulWidget {
+  @override
+  _MonEcranState createState() => _MonEcranState();
+}
+
+class _MonEcranState extends State<MonEcran> {
+  List<dynamic> donnees = [];
+
+  Future<List<dynamic>> recupererDonnees() async {
+    final reponse = await http.get(Uri.parse('https://mon-api.com/donnees'));
+    if (reponse.statusCode == 200) {
+      final reponseJson = json.decode(reponse.body);
+      return reponseJson['donnees'];
+    } else {
+      throw Exception('Impossible de récupérer les données depuis l\'API');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    recupererDonnees().then((donnees) {
+      setState(() {
+        this.donnees = donnees;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Mes données'),
+      ),
+      body: Container(
+        child: charts.BarChart(
+          _creerSerieDeDonnees(),
+          animate: true,
+        ),
+      ),
+    );
+  }
+
+  List<charts.Series<dynamic, String>> _creerSerieDeDonnees() {
+    final data = <Pair>[]; // Pair est une classe qui contient une paire clé-valeur
+    donnees.forEach((element) {
+      data.add(Pair(element['categorie'], element['quantite']));
+    });
+    return [
+      charts.Series<Pair, String>(
+        id: 'Data',
+        domainFn: (Pair pair, _) => pair.key,
+        measureFn: (Pair pair, _) => pair.value,
+        data: data,
+      )
+    ];
+  }
+}
+
+class Pair {
+  final String key;
+  final double value;
+
+  Pair(this.key, this.value);
+}
