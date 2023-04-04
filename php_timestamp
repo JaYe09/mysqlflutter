@@ -1,0 +1,14 @@
+// timestamp à convertir
+$timestamp = 1617618360;
+
+// conversion en date
+$date = date('Y-m-d H:i:s', $timestamp);
+
+// récupération de la date et de l'heure dans des chaînes de caractères séparées
+$date_str = date('Y-m-d', $timestamp);
+$heure_str = date('H:i:s', $timestamp);
+
+// affichage des résultats
+echo "Date complète : $date<br>";
+echo "Date seule : $date_str<br>";
+echo "Heure seule : $heure_str<br>";
