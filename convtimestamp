@@ -1,0 +1,7 @@
+$timestamp1 = 1628063212123; // Exemple de timestamp de 13 chiffres
+$timestamp2 = 1633456789; // Exemple de timestamp de 10 chiffres
+
+$timestamp1_sec = substr($timestamp1, 0, 10); // Récupère les 10 premiers chiffres du premier timestamp
+$new_timestamp = $timestamp1_sec + $timestamp2; // Ajoute les deux timestamps pour obtenir un nouveau timestamp
+
+echo $new_timestamp; // Affiche : 1629690001
