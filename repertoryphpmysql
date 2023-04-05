@@ -21,3 +21,78 @@ foreach (scandir('/chemin/vers/votre/répertoire') as $filename) {
 
 // Fermer la connexion à la base de données
 mysqli_close($conn);
+
+
+
+
+
+//other
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  List _rows = [];
+
+  Future<void> _getData() async {
+    // Envoyer une requête HTTP GET à votre script PHP
+    var url = 'http://monserveur.com/monscript.php';
+    var response = await http.get(Uri.parse(url));
+
+    // Convertir les données de la réponse en un objet JSON
+    var data = json.decode(response.body);
+
+    // Parcourir tous les éléments du tableau pour extraire les informations de chaque ligne
+    for (var i = 0; i < data.length; i++) {
+      var row = data[i];
+      var id = row['id'].toString();
+      var nom = row['nom'];
+      var email = row['email'];
+      _rows.add({'id': id, 'nom': nom, 'email': email});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Récupérer toutes les lignes'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () async {
+                // Appeler la fonction pour récupérer les données de la table
+                await _getData();
+
+                // Mettre à jour l'interface utilisateur avec les informations de chaque ligne
+                setState(() {});
+              },
+              child: Text('Récupérer toutes les lignes'),
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _rows.length,
+                itemBuilder: (context, index) {
+                  var row = _rows[index];
+                  return ListTile(
+                    title: Text('ID: ${row['id']}'),
+                    subtitle: Text('Nom: ${row['nom']}\nEmail: ${row['email']}'),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
