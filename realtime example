@@ -1,0 +1,45 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+class MonObjet extends StatefulWidget {
+  @override
+  _MonObjetState createState() => _MonObjetState();
+}
+
+class _MonObjetState extends State<MonObjet> {
+  String info = 'Initial';
+
+  @override
+  void initState() {
+    super.initState();
+    // Planifier une mise à jour périodique toutes les 5 secondes
+    Timer.periodic(Duration(seconds: 5), (timer) {
+      // Appeler la méthode pour récupérer les informations depuis la base de données
+      getInfoFromDatabase();
+    });
+  }
+
+  void getInfoFromDatabase() async {
+    // Appeler le script PHP pour récupérer les informations depuis la base de données
+    final response = await http.get('http://exemple.com/mon_script_php.php');
+
+    if (response.statusCode == 200) {
+      // Parser la réponse JSON pour obtenir les données
+      final jsonData = json.decode(response.body);
+      String nouvelleInfo = jsonData['info'];
+
+      // Mettre à jour l'état de l'objet avec les nouvelles informations
+      setState(() {
+        info = nouvelleInfo;
+      });
+    } else {
+      print('Erreur de connexion à la base de données');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(info);
+  }
+}
